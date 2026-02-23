@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ANC — WOG Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson: #C0392B;
+    --blush: #F9E8E6;
+    --rose: #E8C4BF;
+    --deep: #1A0A09;
+    --mid: #5C2D28;
+    --soft: #F5F0EF;
+    --white: #FDFAF9;
+    --accent: #D4856A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--soft);
+    color: var(--deep);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    background: var(--crimson);
+    width: 100%;
+    padding: 28px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  header p { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .container {
+    width: 100%;
+    max-width: 480px;
+    padding: 20px 16px 40px;
+  }
+  .card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 24px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(192,57,43,0.08);
+  }
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--crimson);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title span { font-size: 18px; }
+  .date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--mid);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  select, input[type="number"] {
+    width: 100%;
+    padding: 12px 10px;
+    border: 1.5px solid var(--rose);
+    border-radius: 12px;
+    background: var(--soft);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    color: var(--deep);
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  select:focus, input[type="number"]:focus { border-color: var(--crimson); }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .date-label-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .section-label { font-size: 12px; color: var(--mid); font-weight: 500; margin-bottom: 10px; }
+  .month-hint { font-size: 11px; color: var(--accent); margin-top: 5px; }
+  .btn {
+    width: 100%;
+    background: var(--crimson);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: -0.3px;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .btn:active { transform: scale(0.98); background: var(--mid); }
+  .result-card {
+    background: var(--crimson);
+    border-radius: 20px;
+    padding: 28px 20px;
+    text-align: center;
+    display: none;
+    position: relative;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+  .result-card.show { display: block; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.92) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .result-card::before {
+    content: '♀';
+    position: absolute;
+    top: -10px; right: 10px;
+    font-size: 80px;
+    opacity: 0.07;
+    color: #fff;
+  }
+  .result-wog {
+    font-family: 'Fraunces', serif;
+    font-size: 72px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+  .result-wog sup { font-size: 30px; vertical-align: super; letter-spacing: 0; }
+  .result-desc { color: rgba(255,255,255,0.85); font-size: 14px; margin-top: 6px; }
+  .result-detail {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    text-align: left;
+  }
+  .result-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    padding: 5px 0;
+  }
+  .result-detail-row strong { color: #fff; font-size: 13px; text-align: right; }
+  .trimester-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 14px;
+  }
+  .divider { height: 1px; background: rgba(255,255,255,0.18); }
+  .converter-result {
+    background: var(--blush);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    display: none;
+    font-size: 14px;
+    color: var(--mid);
+  }
+  .converter-result.show { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .converter-result strong { color: var(--crimson); font-size: 17px; display: block; margin-bottom: 2px; }
+  .error-msg {
+    color: var(--crimson);
+    font-size: 13px;
+    margin-top: 0;
+    margin-bottom: 12px;
+    display: none;
+    background: var(--blush);
+    padding: 10px 14px;
+    border-radius: 10px;
+    border-left: 3px solid var(--crimson);
+  }
+  .error-msg.show { display: block; }
+  .today-btn {
+    background: none;
+    border: 1.5px solid var(--rose);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--mid);
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .today-btn:active { background: var(--blush); }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .tab {
+    flex: 1;
+    padding: 11px;
+    border: 1.5px solid var(--rose);
+    border-radius: 12px;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--mid);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--crimson); border-color: var(--crimson); color: #fff; font-weight: 500; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .info-note { font-size: 12px; color: var(--accent); text-align: center; margin-top: 10px; font-style: italic; }
+  footer { text-align: center; padding: 0 16px 30px; font-size: 12px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ANC WOG Calculator</h1>
+  <p>Antenatal Care · Week of Gestation</p>
+  <span class="badge">Bikram Sambat (BS) Calendar</span>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('wog')">🩺 WOG Calculator</button>
+    <button class="tab" onclick="switchTab('converter')">🔄 Date Converter</button>
+  </div>
+
+  <!-- ── WOG TAB ── -->
+  <div class="tab-content active" id="tab-wog">
+
+    <div class="card">
+      <div class="card-title"><span>🩸</span> Last Menstrual Period (LMP)</div>
+      <p class="section-label">Enter LMP date in Bikram Sambat (BS)</p>
+      <div class="date-label-row">
+        <label>Year</label><label>Month</label><label>Day</label>
+      </div>
+      <div class="date-row">
+        <div class="select-wrap"><select id="lmp-year" onchange="onLmpChange()"></select></div>
+        <div class="select-wrap"><select id="lmp-month" onchange="onLmpChange()"></select></div>
+        <input type="number" id="lmp-day" min="1" max="32" placeholder="DD" oninput="onLmpChange()">
+      </div>
+      <div class="month-hint" id="lmp-hint"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>📅</span> Visit Date</div>
+      <p class="section-label">ANC visit date in Bikram Sambat (BS)</p>
+      <div class="date-label-row">
+        <label>Year</label><label>Month</label><label>Day</label>
+      </div>
+      <div class="date-row">
+        <div class="select-wrap"><select id="tod-year" onchange="onTodChange()"></select></div>
+        <div class="select-wrap"><select id="tod-month" onchange="onTodChange()"></select></div>
+        <input type="number" id="tod-day" min="1" max="32" placeholder="DD" oninput="onTodChange()">
+      </div>
+      <div class="month-hint" id="tod-hint"></div>
+      <button class="today-btn" onclick="fillToday()">📍 Auto-fill Today's BS Date</button>
+    </div>
+
+    <div class="error-msg" id="err"></div>
+    <button class="btn" onclick="calcWOG()">Calculate WOG</button>
+
+    <div class="result-card" id="result">
+      <div class="result-desc">Week of Gestation</div>
+      <div class="result-wog" id="r-wog">0<sup>+0</sup></div>
+      <div class="result-desc" id="r-wog-label"></div>
+      <div class="trimester-tag" id="r-trimester"></div>
+      <div class="result-detail">
+        <div class="result-detail-row"><span>LMP (BS)</span><strong id="r-lmp-bs"></strong></div>
+        <div class="divider"></div>
+        <div class="result-detail-row"><span>LMP (AD)</span><strong id="r-lmp-ad"></strong></div>
+        <div class="divider"></div>
+        <div class="result-detail-row"><span>Visit (BS)</span><strong id="r-vis-bs"></strong></div>
+        <div class="divider"></div>
+        <div class="result-detail-row"><span>Visit (AD)</span><strong id="r-vis-ad"></strong></div>
+        <div class="divider"></div>
+        <div class="result-detail-row"><span>EDD (BS)</span><strong id="r-edd-bs"></strong></div>
+        <div class="divider"></div>
+        <div class="result-detail-row"><span>EDD (AD)</span><strong id="r-edd-ad"></strong></div>
+        <div class="divider"></div>
+        <div class="result-detail-row"><span>Total Days</span><strong id="r-total"></strong></div>
+      </div>
+    </div>
+    <p class="info-note">EDD calculated using Naegele's Rule (LMP + 280 days)</p>
+  </div>
+
+  <!-- ── CONVERTER TAB ── -->
+  <div class="tab-content" id="tab-converter">
+    <div class="card">
+      <div class="card-title"><span>🇳🇵</span> BS → AD</div>
+      <p class="section-label">Nepali (BS) date to English (AD) date</p>
+      <div class="date-label-row"><label>Year</label><label>Month</label><label>Day</label></div>
+      <div class="date-row">
+        <div class="select-wrap"><select id="c1-year" onchange="onC1Change()"></select></div>
+        <div class="select-wrap"><select id="c1-month" onchange="onC1Change()"></select></div>
+        <input type="number" id="c1-day" min="1" max="32" placeholder="DD">
+      </div>
+      <div class="month-hint" id="c1-hint"></div>
+      <button class="btn" style="margin-top:12px" onclick="doBS2AD()">Convert to AD →</button>
+      <div class="converter-result" id="c1-res">
+        <strong id="c1-ad"></strong>
+        <span id="c1-dow"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🌐</span> AD → BS</div>
+      <p class="section-label">English (AD) date to Nepali (BS) date</p>
+      <div class="date-row" style="grid-template-columns:1.2fr 1fr 1fr">
+        <div><label>Year (AD)</label><input type="number" id="c2-year" placeholder="YYYY"></div>
+        <div><label>Month</label><input type="number" id="c2-month" min="1" max="12" placeholder="MM"></div>
+        <div><label>Day</label><input type="number" id="c2-day" min="1" max="31" placeholder="DD"></div>
+      </div>
+      <button class="btn" style="margin-top:12px" onclick="doAD2BS()">Convert to BS →</button>
+      <div class="converter-result" id="c2-res">
+        <strong id="c2-bs"></strong>
+        <span id="c2-dow"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>Built for ANC Clinics · Nepali Calendar BS</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  NEPALI CALENDAR DATA — BS month day-counts
+//  Verified anchor: BS 2082/11/11 (Falgun 11) = AD 23 Feb 2026
+//  Source: hamropatro.com / nepalicalendar.rat32.com
+// ═══════════════════════════════════════════════════════════
+const CAL = {
+  2000:[30,32,31,32,31,30,30,30,29,30,29,31],
+  2001:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2002:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2003:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2004:[30,32,31,32,31,30,30,30,29,30,29,31],
+  2005:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2006:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2007:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2008:[31,31,31,32,31,31,29,30,30,29,29,31],
+  2009:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2010:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2011:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2012:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2013:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2014:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2015:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2016:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2017:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2018:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2019:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2020:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2021:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2022:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2023:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2024:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2025:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2026:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2027:[31,32,31,32,31,30,30,30,29,29,30,32],
+  2028:[30,31,32,32,31,30,30,30,29,29,30,31],
+  2029:[31,31,32,31,31,30,30,30,29,30,29,31],
+  2030:[31,31,32,31,31,30,30,30,29,30,29,31],
+  2031:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2032:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2033:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2034:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2035:[31,31,32,32,31,30,30,29,30,29,30,31],
+  2036:[30,31,32,32,31,30,30,29,30,29,30,30],
+  2037:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2038:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2039:[31,32,31,32,31,30,30,29,30,29,30,31],
+  2040:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2041:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2042:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2043:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2044:[31,31,32,32,31,30,30,30,29,29,30,31],
+  2045:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2046:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2047:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2048:[30,32,31,32,31,30,30,30,29,29,30,31],
+  2049:[31,31,32,31,31,31,29,30,30,29,30,30],
+  2050:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2051:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2052:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2053:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2054:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2055:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2056:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2057:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2058:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2059:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2060:[30,31,32,32,30,31,30,29,30,29,30,30],
+  2061:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2062:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2063:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2064:[30,31,32,32,31,30,29,30,30,29,30,30],
+  2065:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2066:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2067:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2068:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2069:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2070:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2071:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2072:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2073:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2074:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2075:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2076:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2077:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2078:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2079:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2080:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2081:[31,31,32,31,31,31,30,29,30,29,30,30],
+  // 2082 VERIFIED: anchor BS 2082/11/11 = AD Feb 23 2026
+  // Working back: Falgun(11)=30, Magh(10)=29, Poush(9)=29
+  2082:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2083:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2084:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2085:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2086:[31,31,32,31,31,31,30,30,29,29,30,30],
+  2087:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2088:[31,31,31,32,31,31,29,30,30,29,30,30],
+  2089:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2090:[31,31,32,31,31,31,30,30,29,29,30,30],
+};
+
+const MONTH_NAMES = ['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+const AD_MONTHS   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOW         = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// Reference: BS 2000/01/01 = AD 1943/04/19
+// Verified: BS 2082/11/11 (Falgun 11) = AD Feb 23, 2026 ✓
+const REF = new Date(1943, 3, 19);
+
+function mdays(y, m) { return CAL[y] ? CAL[y][m-1] : 30; }
+
+function bsToDays(y, m, d) {
+  let n = 0;
+  for (let yr = 2000; yr < y; yr++) {
+    const c = CAL[yr]; if (c) n += c.reduce((a,b)=>a+b,0); else n += 365;
+  }
+  for (let mo = 1; mo < m; mo++) n += mdays(y, mo);
+  return n + (d - 1);
+}
+
+function bs2ad(y, m, d) {
+  const dt = new Date(REF);
+  dt.setDate(dt.getDate() + bsToDays(y, m, d));
+  return dt;
+}
+
+function ad2bs(dt) {
+  let rem = Math.floor((dt - REF) / 86400000);
+  let y = 2000;
+  while (true) {
+    const c = CAL[y]; if (!c) break;
+    const yd = c.reduce((a,b)=>a+b,0);
+    if (rem < yd) break;
+    rem -= yd; y++;
+  }
+  let m = 1, d = 1;
+  for (let mo = 1; mo <= 12; mo++) {
+    const md = mdays(y, mo);
+    if (rem < md) { m = mo; d = rem + 1; break; }
+    rem -= md;
+  }
+  return { y, m, d };
+}
+
+function fbs(y, m, d) { return `${y}/${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`; }
+function fad(dt) { return `${dt.getDate()} ${AD_MONTHS[dt.getMonth()]} ${dt.getFullYear()}`; }
+
+// ─── Selects ─────────────────────────────────────────────
+function mkYears(id, lo, hi, def) {
+  const el = document.getElementById(id); el.innerHTML = '';
+  for (let y = lo; y <= hi; y++) {
+    const o = document.createElement('option'); o.value = y; o.textContent = y;
+    if (y === def) o.selected = true; el.appendChild(o);
+  }
+}
+function mkMonths(id, def) {
+  const el = document.getElementById(id); el.innerHTML = '';
+  MONTH_NAMES.forEach((n, i) => {
+    const o = document.createElement('option'); o.value = i+1;
+    o.textContent = `${i+1} · ${n}`;
+    if (i+1 === def) o.selected = true; el.appendChild(o);
+  });
+}
+function hint(prefix) {
+  const y = +document.getElementById(`${prefix}-year`).value;
+  const m = +document.getElementById(`${prefix}-month`).value;
+  document.getElementById(`${prefix}-hint`).textContent =
+    `${MONTH_NAMES[m-1]} ${y} BS has ${mdays(y,m)} days`;
+}
+function onLmpChange() { hint('lmp'); }
+function onTodChange() { hint('tod'); }
+function onC1Change()  {
+  const y = +document.getElementById('c1-year').value;
+  const m = +document.getElementById('c1-month').value;
+  document.getElementById('c1-hint').textContent = `${MONTH_NAMES[m-1]} ${y} has ${mdays(y,m)} days`;
+}
+function fillToday() {
+  const bs = ad2bs(new Date());
+  const yr = document.getElementById('tod-year');
+  for (const o of yr.options) if (+o.value === bs.y) { o.selected = true; break; }
+  const mo = document.getElementById('tod-month');
+  for (const o of mo.options) if (+o.value === bs.m) { o.selected = true; break; }
+  document.getElementById('tod-day').value = bs.d;
+  hint('tod');
+}
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab')[t==='wog'?0:1].classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+// ─── WOG ─────────────────────────────────────────────────
+function calcWOG() {
+  const ly = +document.getElementById('lmp-year').value;
+  const lm = +document.getElementById('lmp-month').value;
+  const ld = +document.getElementById('lmp-day').value;
+  const ty = +document.getElementById('tod-year').value;
+  const tm = +document.getElementById('tod-month').value;
+  const td = +document.getElementById('tod-day').value;
+
+  const err = document.getElementById('err');
+  const res = document.getElementById('result');
+
+  if (!ld || ld < 1 || ld > mdays(ly,lm)) {
+    err.textContent = `⚠ LMP day invalid — ${MONTH_NAMES[lm-1]} ${ly} has ${mdays(ly,lm)} days.`;
+    err.classList.add('show'); res.classList.remove('show'); return;
+  }
+  if (!td || td < 1 || td > mdays(ty,tm)) {
+    err.textContent = `⚠ Visit day invalid — ${MONTH_NAMES[tm-1]} ${ty} has ${mdays(ty,tm)} days.`;
+    err.classList.add('show'); res.classList.remove('show'); return;
+  }
+
+  const lmpAD = bs2ad(ly, lm, ld);
+  const visAD = bs2ad(ty, tm, td);
+  const days  = Math.floor((visAD - lmpAD) / 86400000);
+
+  if (days < 0) {
+    err.textContent = '⚠ LMP must be before the visit date.';
+    err.classList.add('show'); res.classList.remove('show'); return;
+  }
+  err.classList.remove('show');
+
+  const wks = Math.floor(days / 7);
+  const dys = days % 7;
+  const eddAD = new Date(lmpAD.getTime() + 280 * 86400000);
+  const eddBS = ad2bs(eddAD);
+
+  const tri = wks < 13 ? '🌱 1st Trimester' : wks < 28 ? '🌿 2nd Trimester' : '🌸 3rd Trimester';
+
+  document.getElementById('r-wog').innerHTML      = `${wks}<sup>+${dys}</sup>`;
+  document.getElementById('r-wog-label').textContent = `${wks} week${wks!==1?'s':''} and ${dys} day${dys!==1?'s':''}`;
+  document.getElementById('r-trimester').textContent = tri;
+  document.getElementById('r-lmp-bs').textContent  = fbs(ly,lm,ld);
+  document.getElementById('r-lmp-ad').textContent  = fad(lmpAD);
+  document.getElementById('r-vis-bs').textContent  = fbs(ty,tm,td);
+  document.getElementById('r-vis-ad').textContent  = fad(visAD);
+  document.getElementById('r-edd-bs').textContent  = fbs(eddBS.y,eddBS.m,eddBS.d);
+  document.getElementById('r-edd-ad').textContent  = fad(eddAD);
+  document.getElementById('r-total').textContent   = days + ' days';
+
+  res.classList.remove('show');
+  void res.offsetWidth;
+  res.classList.add('show');
+  res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── Converters ───────────────────────────────────────────
+function doBS2AD() {
+  const y = +document.getElementById('c1-year').value;
+  const m = +document.getElementById('c1-month').value;
+  const d = +document.getElementById('c1-day').value;
+  if (!d || d < 1 || d > mdays(y,m)) { alert(`Invalid day — ${MONTH_NAMES[m-1]} ${y} has ${mdays(y,m)} days.`); return; }
+  const ad = bs2ad(y, m, d);
+  document.getElementById('c1-ad').textContent  = fad(ad);
+  document.getElementById('c1-dow').textContent = DOW[ad.getDay()];
+  const r = document.getElementById('c1-res');
+  r.classList.remove('show'); void r.offsetWidth; r.classList.add('show');
+}
+function doAD2BS() {
+  const y = +document.getElementById('c2-year').value;
+  const m = +document.getElementById('c2-month').value;
+  const d = +document.getElementById('c2-day').value;
+  if (!y||!m||!d||m<1||m>12||d<1||d>31) { alert('Enter a valid AD date.'); return; }
+  const ad = new Date(y, m-1, d);
+  if (ad.getMonth() !== m-1) { alert('Invalid date.'); return; }
+  const bs = ad2bs(ad);
+  document.getElementById('c2-bs').textContent  = `${fbs(bs.y,bs.m,bs.d)} · ${MONTH_NAMES[bs.m-1]}`;
+  document.getElementById('c2-dow').textContent = DOW[ad.getDay()];
+  const r = document.getElementById('c2-res');
+  r.classList.remove('show'); void r.offsetWidth; r.classList.add('show');
+}
+
+// ─── Init ─────────────────────────────────────────────────
+(function() {
+  mkYears('lmp-year', 2075, 2085, 2082); mkMonths('lmp-month', 9);
+  document.getElementById('lmp-day').value = 11; hint('lmp');
+
+  mkYears('tod-year', 2075, 2085, 2082); mkMonths('tod-month', 11);
+  document.getElementById('tod-day').value = 11; hint('tod');
+
+  mkYears('c1-year', 2060, 2090, 2082); mkMonths('c1-month', 1); onC1Change();
+})();
+</script>
+</body>
+</html>
