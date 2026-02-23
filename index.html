@@ -5,294 +5,605 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ANC — WOG Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --crimson: #C0392B;
-    --blush: #F9E8E6;
-    --rose: #E8C4BF;
-    --deep: #1A0A09;
-    --mid: #5C2D28;
-    --soft: #F5F0EF;
-    --white: #FDFAF9;
-    --accent: #D4856A;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--soft);
-    color: var(--deep);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  header {
-    background: var(--crimson);
-    width: 100%;
-    padding: 28px 24px 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 160px; height: 160px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-  }
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: -30px; left: -20px;
-    width: 100px; height: 100px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-  }
-  header h1 {
-    font-family: 'Fraunces', serif;
-    font-size: 26px;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: -0.5px;
-  }
-  header p { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; }
-  .badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.18);
-    color: #fff;
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-top: 8px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .container {
-    width: 100%;
-    max-width: 480px;
-    padding: 20px 16px 40px;
-  }
-  .card {
-    background: var(--white);
-    border-radius: 20px;
-    padding: 24px 20px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 12px rgba(192,57,43,0.08);
-  }
-  .card-title {
-    font-family: 'Fraunces', serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--crimson);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-title span { font-size: 18px; }
-  .date-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1.2fr;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-  label {
-    display: block;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--mid);
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-  select, input[type="number"] {
-    width: 100%;
-    padding: 12px 10px;
-    border: 1.5px solid var(--rose);
-    border-radius: 12px;
-    background: var(--soft);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    color: var(--deep);
-    appearance: none;
-    -webkit-appearance: none;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  select:focus, input[type="number"]:focus { border-color: var(--crimson); }
-  .select-wrap { position: relative; }
-  .select-wrap::after {
-    content: '▾';
-    position: absolute;
-    right: 10px; top: 50%;
-    transform: translateY(-50%);
-    color: var(--accent);
-    font-size: 13px;
-    pointer-events: none;
-  }
-  .date-label-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1.2fr;
-    gap: 8px;
-    margin-bottom: 4px;
-  }
-  .section-label { font-size: 12px; color: var(--mid); font-weight: 500; margin-bottom: 10px; }
-  .month-hint { font-size: 11px; color: var(--accent); margin-top: 5px; }
-  .btn {
-    width: 100%;
-    background: var(--crimson);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 16px;
-    font-family: 'Fraunces', serif;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-    letter-spacing: -0.3px;
-    transition: background 0.2s, transform 0.1s;
-    margin-top: 8px;
-  }
-  .btn:active { transform: scale(0.98); background: var(--mid); }
-  .result-card {
-    background: var(--crimson);
-    border-radius: 20px;
-    padding: 28px 20px;
-    text-align: center;
-    display: none;
-    position: relative;
-    overflow: hidden;
-    margin-top: 16px;
-  }
-  .result-card.show { display: block; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-  @keyframes popIn {
-    from { opacity: 0; transform: scale(0.92) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  .result-card::before {
-    content: '♀';
-    position: absolute;
-    top: -10px; right: 10px;
-    font-size: 80px;
-    opacity: 0.07;
-    color: #fff;
-  }
-  .result-wog {
-    font-family: 'Fraunces', serif;
-    font-size: 72px;
-    font-weight: 600;
-    color: #fff;
-    line-height: 1;
-    letter-spacing: -2px;
-  }
-  .result-wog sup { font-size: 30px; vertical-align: super; letter-spacing: 0; }
-  .result-desc { color: rgba(255,255,255,0.85); font-size: 14px; margin-top: 6px; }
-  .result-detail {
-    background: rgba(255,255,255,0.15);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-top: 16px;
-    text-align: left;
-  }
-  .result-detail-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: rgba(255,255,255,0.85);
-    font-size: 13px;
-    padding: 5px 0;
-  }
-  .result-detail-row strong { color: #fff; font-size: 13px; text-align: right; }
-  .trimester-tag {
-    display: inline-block;
-    background: rgba(255,255,255,0.22);
-    color: #fff;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    margin-top: 14px;
-  }
-  .divider { height: 1px; background: rgba(255,255,255,0.18); }
-  .converter-result {
-    background: var(--blush);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-top: 12px;
-    display: none;
-    font-size: 14px;
-    color: var(--mid);
-  }
-  .converter-result.show { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .converter-result strong { color: var(--crimson); font-size: 17px; display: block; margin-bottom: 2px; }
-  .error-msg {
-    color: var(--crimson);
-    font-size: 13px;
-    margin-top: 0;
-    margin-bottom: 12px;
-    display: none;
-    background: var(--blush);
-    padding: 10px 14px;
-    border-radius: 10px;
-    border-left: 3px solid var(--crimson);
-  }
-  .error-msg.show { display: block; }
-  .today-btn {
-    background: none;
-    border: 1.5px solid var(--rose);
-    border-radius: 10px;
-    padding: 8px 14px;
-    font-size: 12px;
-    color: var(--mid);
-    cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
-    transition: all 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .today-btn:active { background: var(--blush); }
-  .tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .tab {
-    flex: 1;
-    padding: 11px;
-    border: 1.5px solid var(--rose);
-    border-radius: 12px;
-    background: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--mid);
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  .tab.active { background: var(--crimson); border-color: var(--crimson); color: #fff; font-weight: 500; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-  .info-note { font-size: 12px; color: var(--accent); text-align: center; margin-top: 10px; font-style: italic; }
-  footer { text-align: center; padding: 0 16px 30px; font-size: 12px; color: var(--accent); }
+:root {
+  --red: #B5281C;
+  --red2: #D93D2E;
+  --blush: #FDF0EE;
+  --rose: #F0C9C3;
+  --deep: #1C0905;
+  --mid: #6B2D24;
+  --muted: #9E6058;
+  --soft: #FAF3F2;
+  --white: #FFFCFB;
+  --accent: #E8845A;
+  --gold: #D4A853;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--soft);
+  color: var(--deep);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* ── PAGE LOAD STAGGER ── */
+.stagger-1 { animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.stagger-2 { animation: slideUp 0.6s 0.1s cubic-bezier(0.16,1,0.3,1) both; }
+.stagger-3 { animation: slideUp 0.6s 0.2s cubic-bezier(0.16,1,0.3,1) both; }
+.stagger-4 { animation: slideUp 0.6s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HEADER ── */
+header {
+  background: linear-gradient(160deg, #8B1A10 0%, var(--red) 50%, #C94030 100%);
+  width: 100%;
+  padding: 36px 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-inner { position: relative; z-index: 2; }
+
+/* animated floating circles in header */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  animation: float linear infinite;
+}
+.orb-1 { width:120px;height:120px; top:-30px; right:-20px; animation-duration:8s; }
+.orb-2 { width:70px; height:70px;  bottom:-15px; left:10px; animation-duration:6s; animation-delay:-2s; }
+.orb-3 { width:40px; height:40px;  top:20px; left:30%; animation-duration:10s; animation-delay:-4s; }
+.orb-4 { width:90px; height:90px;  bottom:-20px; right:20%; animation-duration:7s; animation-delay:-1s; background:rgba(255,255,255,0.04); }
+
+@keyframes float {
+  0%   { transform: translateY(0) scale(1); }
+  50%  { transform: translateY(-12px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* pulse ring behind the icon */
+.header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  margin-bottom: 12px;
+  font-size: 26px;
+  position: relative;
+  animation: pulseRing 2.5s ease-in-out infinite;
+}
+@keyframes pulseRing {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.3); }
+  50%      { box-shadow: 0 0 0 14px rgba(255,255,255,0); }
+}
+
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+header p { color: rgba(255,255,255,0.72); font-size: 13px; margin-top: 5px; font-weight: 300; }
+.badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.9);
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-top: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+/* live date ticker */
+.live-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 5px 14px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #6EFFA0;
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* ── CONTAINER ── */
+.container {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 16px 50px;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 16px;
+  padding: 5px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(181,40,28,0.1);
+  backdrop-filter: blur(8px);
+}
+.tab {
+  flex: 1;
+  padding: 11px 8px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+.tab.active {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(181,40,28,0.4);
+  transform: scale(1.02);
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: 22px;
+  padding: 22px 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 3px rgba(181,40,28,0.06), 0 4px 16px rgba(181,40,28,0.06);
+  transition: box-shadow 0.3s, transform 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--accent));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  border-radius: 3px 3px 0 0;
+}
+.card:focus-within::before { transform: scaleX(1); }
+.card:focus-within { box-shadow: 0 2px 6px rgba(181,40,28,0.1), 0 8px 24px rgba(181,40,28,0.12); }
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--blush);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+/* ── FORM ELEMENTS ── */
+.date-label-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 10px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  font-size: 12px;
+  pointer-events: none;
+}
+select, input[type="number"] {
+  width: 100%;
+  padding: 11px 10px;
+  border: 1.5px solid var(--rose);
+  border-radius: 12px;
+  background: var(--blush);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  color: var(--deep);
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+select:focus, input[type="number"]:focus {
+  border-color: var(--red);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(181,40,28,0.12);
+  transform: scale(1.01);
+}
+
+.month-hint {
+  font-size: 11px;
+  color: var(--accent);
+  margin-top: 4px;
+  height: 16px;
+  transition: opacity 0.3s;
+}
+
+/* ── BUTTON ── */
+.btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--red2), var(--red));
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 17px;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: -0.3px;
+  transition: transform 0.15s, box-shadow 0.2s;
+  margin-top: 8px;
+  box-shadow: 0 4px 16px rgba(181,40,28,0.35), 0 1px 3px rgba(181,40,28,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  border-radius: inherit;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(181,40,28,0.45); }
+.btn:active { transform: scale(0.97) translateY(0); box-shadow: 0 2px 8px rgba(181,40,28,0.3); }
+
+/* ripple */
+.ripple-el {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ── TODAY BUTTON ── */
+.today-btn {
+  background: none;
+  border: 1.5px solid var(--rose);
+  border-radius: 12px;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mid);
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.today-btn:hover { background: var(--blush); border-color: var(--accent); color: var(--red); }
+.today-btn:active { transform: scale(0.98); }
+
+/* ── ERROR ── */
+.error-msg {
+  display: none;
+  background: #FFF0EE;
+  border-left: 3px solid var(--red);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 12px;
+  animation: shakeIn 0.4s cubic-bezier(0.36,0.07,0.19,0.97);
+}
+.error-msg.show { display: block; }
+@keyframes shakeIn {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ── RESULT CARD ── */
+.result-card {
+  border-radius: 24px;
+  padding: 0;
+  text-align: center;
+  display: none;
+  position: relative;
+  overflow: hidden;
+  margin-top: 16px;
+  background: linear-gradient(145deg, #9B1F14, var(--red), #C0392B);
+  box-shadow: 0 8px 32px rgba(181,40,28,0.45), 0 2px 8px rgba(0,0,0,0.15);
+}
+.result-card.show {
+  display: block;
+  animation: resultReveal 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes resultReveal {
+  from { opacity:0; transform: scale(0.88) translateY(20px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+/* confetti burst */
+.confetti-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.confetti-dot {
+  position: absolute;
+  border-radius: 50%;
+  animation: confettiFly 1s cubic-bezier(0.25,0.46,0.45,0.94) both;
+}
+@keyframes confettiFly {
+  from { transform: translate(0,0) scale(0); opacity:1; }
+  to   { transform: translate(var(--tx), var(--ty)) scale(1); opacity:0; }
+}
+
+.result-top {
+  padding: 32px 24px 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* animated gradient shimmer on result */
+.result-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  animation: shimmer 3s ease-in-out infinite 0.8s;
+}
+@keyframes shimmer {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* big decorative bg text */
+.result-bg-text {
+  position: absolute;
+  bottom: -10px; right: -10px;
+  font-family: 'Playfair Display', serif;
+  font-size: 100px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.05);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.result-label { color: rgba(255,255,255,0.65); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+
+.result-wog {
+  font-family: 'Playfair Display', serif;
+  font-size: 80px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -3px;
+  margin: 8px 0 4px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.result-wog sup {
+  font-size: 34px;
+  vertical-align: super;
+  letter-spacing: 0;
+  opacity: 0.85;
+}
+
+/* counting animation class */
+.count-anim { animation: countPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes countPop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.result-sublabel { color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 300; }
+
+.trimester-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  padding: 7px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 16px;
+  backdrop-filter: blur(4px);
+  animation: tagSlide 0.5s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes tagSlide {
+  from { transform: scale(0.8) translateY(8px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* progress bar */
+.progress-wrap {
+  padding: 0 24px 20px;
+  position: relative; z-index:2;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 6px;
+}
+.progress-track {
+  height: 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,255,255,0.9));
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1s cubic-bezier(0.16,1,0.3,1) 0.4s;
+}
+
+/* details panel */
+.result-detail {
+  background: rgba(0,0,0,0.18);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 16px 20px;
+  text-align: left;
+  position: relative; z-index:2;
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  animation: rowFade 0.3s ease both;
+}
+@keyframes rowFade {
+  from { opacity:0; transform: translateX(-6px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+.detail-row:nth-child(1) { animation-delay: 0.35s; }
+.detail-row:nth-child(2) { animation-delay: 0.42s; }
+.detail-row:nth-child(3) { animation-delay: 0.49s; }
+.detail-row:nth-child(4) { animation-delay: 0.56s; }
+.detail-row:nth-child(5) { animation-delay: 0.63s; }
+.detail-row:nth-child(6) { animation-delay: 0.70s; }
+.detail-row span { color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 300; }
+.detail-row strong { color: #fff; font-size: 13px; font-weight: 500; text-align: right; }
+.detail-divider { height: 1px; background: rgba(255,255,255,0.08); }
+
+/* ── CONVERTER RESULT ── */
+.converter-result {
+  background: var(--blush);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-top: 12px;
+  display: none;
+  border-left: 3px solid var(--accent);
+}
+.converter-result.show {
+  display: block;
+  animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.converter-result strong { color: var(--red); font-size: 18px; display: block; margin-bottom: 3px; font-family: 'Playfair Display', serif; }
+.converter-result span { color: var(--muted); font-size: 13px; }
+
+/* ── INFO NOTE ── */
+.info-note {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.section-label { font-size: 12px; color: var(--muted); font-weight: 400; margin-bottom: 12px; }
+
+footer {
+  text-align: center;
+  padding: 0 16px 32px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>ANC WOG Calculator</h1>
-  <p>Antenatal Care · Week of Gestation</p>
-  <span class="badge">Bikram Sambat (BS) Calendar</span>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+  <div class="header-inner">
+    <div class="header-icon">🩺</div>
+    <h1>ANC WOG Calculator</h1>
+    <p>Antenatal Care · Week of Gestation</p>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+      <span class="badge">Bikram Sambat (BS)</span>
+      <span class="live-date"><span class="live-dot"></span><span id="live-date-txt">Loading…</span></span>
+    </div>
+  </div>
 </header>
 
 <div class="container">
-  <div class="tabs">
+
+  <div class="tabs stagger-1">
     <button class="tab active" onclick="switchTab('wog')">🩺 WOG Calculator</button>
     <button class="tab" onclick="switchTab('converter')">🔄 Date Converter</button>
   </div>
@@ -300,8 +611,11 @@
   <!-- ── WOG TAB ── -->
   <div class="tab-content active" id="tab-wog">
 
-    <div class="card">
-      <div class="card-title"><span>🩸</span> Last Menstrual Period (LMP)</div>
+    <div class="card stagger-2">
+      <div class="card-title">
+        <div class="card-icon">🩸</div>
+        Last Menstrual Period
+      </div>
       <p class="section-label">Enter LMP date in Bikram Sambat (BS)</p>
       <div class="date-label-row">
         <label>Year</label><label>Month</label><label>Day</label>
@@ -314,8 +628,11 @@
       <div class="month-hint" id="lmp-hint"></div>
     </div>
 
-    <div class="card">
-      <div class="card-title"><span>📅</span> Visit Date</div>
+    <div class="card stagger-3">
+      <div class="card-title">
+        <div class="card-icon">📅</div>
+        Visit Date (Today)
+      </div>
       <p class="section-label">ANC visit date in Bikram Sambat (BS)</p>
       <div class="date-label-row">
         <label>Year</label><label>Month</label><label>Day</label>
@@ -330,37 +647,54 @@
     </div>
 
     <div class="error-msg" id="err"></div>
-    <button class="btn" onclick="calcWOG()">Calculate WOG</button>
+    <button class="btn stagger-4" id="calc-btn" onclick="calcWOG()">Calculate WOG</button>
 
     <div class="result-card" id="result">
-      <div class="result-desc">Week of Gestation</div>
-      <div class="result-wog" id="r-wog">0<sup>+0</sup></div>
-      <div class="result-desc" id="r-wog-label"></div>
-      <div class="trimester-tag" id="r-trimester"></div>
+      <div class="confetti-wrap" id="confetti"></div>
+      <div class="result-bg-text" id="r-bg-num">0</div>
+
+      <div class="result-top">
+        <div class="result-label">Week of Gestation</div>
+        <div class="result-wog" id="r-wog">—</div>
+        <div class="result-sublabel" id="r-wog-label"></div>
+        <div class="trimester-tag" id="r-trimester"></div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>LMP</span>
+          <span id="r-pct">0% of pregnancy</span>
+          <span>EDD</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="r-prog"></div>
+        </div>
+      </div>
+
       <div class="result-detail">
-        <div class="result-detail-row"><span>LMP (BS)</span><strong id="r-lmp-bs"></strong></div>
-        <div class="divider"></div>
-        <div class="result-detail-row"><span>LMP (AD)</span><strong id="r-lmp-ad"></strong></div>
-        <div class="divider"></div>
-        <div class="result-detail-row"><span>Visit (BS)</span><strong id="r-vis-bs"></strong></div>
-        <div class="divider"></div>
-        <div class="result-detail-row"><span>Visit (AD)</span><strong id="r-vis-ad"></strong></div>
-        <div class="divider"></div>
-        <div class="result-detail-row"><span>EDD (BS)</span><strong id="r-edd-bs"></strong></div>
-        <div class="divider"></div>
-        <div class="result-detail-row"><span>EDD (AD)</span><strong id="r-edd-ad"></strong></div>
-        <div class="divider"></div>
-        <div class="result-detail-row"><span>Total Days</span><strong id="r-total"></strong></div>
+        <div class="detail-row"><span>LMP (BS)</span><strong id="r-lmp-bs">—</strong></div>
+        <div class="detail-divider"></div>
+        <div class="detail-row"><span>LMP (AD)</span><strong id="r-lmp-ad">—</strong></div>
+        <div class="detail-divider"></div>
+        <div class="detail-row"><span>Visit (BS)</span><strong id="r-vis-bs">—</strong></div>
+        <div class="detail-divider"></div>
+        <div class="detail-row"><span>Visit (AD)</span><strong id="r-vis-ad">—</strong></div>
+        <div class="detail-divider"></div>
+        <div class="detail-row"><span>EDD (BS)</span><strong id="r-edd-bs">—</strong></div>
+        <div class="detail-divider"></div>
+        <div class="detail-row"><span>EDD (AD)</span><strong id="r-edd-ad">—</strong></div>
+        <div class="detail-divider"></div>
+        <div class="detail-row"><span>Total Days</span><strong id="r-total">—</strong></div>
       </div>
     </div>
-    <p class="info-note">EDD calculated using Naegele's Rule (LMP + 280 days)</p>
+    <p class="info-note" style="margin-top:14px">EDD = LMP + 280 days (Naegele's Rule)</p>
   </div>
 
   <!-- ── CONVERTER TAB ── -->
   <div class="tab-content" id="tab-converter">
-    <div class="card">
-      <div class="card-title"><span>🇳🇵</span> BS → AD</div>
-      <p class="section-label">Nepali (BS) date to English (AD) date</p>
+    <div class="card stagger-1">
+      <div class="card-title"><div class="card-icon">🇳🇵</div>BS → AD</div>
+      <p class="section-label">Nepali (BS) to English (AD)</p>
       <div class="date-label-row"><label>Year</label><label>Month</label><label>Day</label></div>
       <div class="date-row">
         <div class="select-wrap"><select id="c1-year" onchange="onC1Change()"></select></div>
@@ -368,315 +702,350 @@
         <input type="number" id="c1-day" min="1" max="32" placeholder="DD">
       </div>
       <div class="month-hint" id="c1-hint"></div>
-      <button class="btn" style="margin-top:12px" onclick="doBS2AD()">Convert to AD →</button>
+      <button class="btn" style="margin-top:12px;font-size:15px;padding:14px" onclick="doBS2AD()">Convert to AD →</button>
       <div class="converter-result" id="c1-res">
-        <strong id="c1-ad"></strong>
+        <strong id="c1-ad">—</strong>
         <span id="c1-dow"></span>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title"><span>🌐</span> AD → BS</div>
-      <p class="section-label">English (AD) date to Nepali (BS) date</p>
+    <div class="card stagger-2">
+      <div class="card-title"><div class="card-icon">🌐</div>AD → BS</div>
+      <p class="section-label">English (AD) to Nepali (BS)</p>
       <div class="date-row" style="grid-template-columns:1.2fr 1fr 1fr">
         <div><label>Year (AD)</label><input type="number" id="c2-year" placeholder="YYYY"></div>
         <div><label>Month</label><input type="number" id="c2-month" min="1" max="12" placeholder="MM"></div>
         <div><label>Day</label><input type="number" id="c2-day" min="1" max="31" placeholder="DD"></div>
       </div>
-      <button class="btn" style="margin-top:12px" onclick="doAD2BS()">Convert to BS →</button>
+      <button class="btn" style="margin-top:12px;font-size:15px;padding:14px" onclick="doAD2BS()">Convert to BS →</button>
       <div class="converter-result" id="c2-res">
-        <strong id="c2-bs"></strong>
+        <strong id="c2-bs">—</strong>
         <span id="c2-dow"></span>
       </div>
     </div>
   </div>
 </div>
 
-<footer>Built for ANC Clinics · Nepali Calendar BS</footer>
+<footer>Built for ANC Clinics · Bikram Sambat Calendar</footer>
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  NEPALI CALENDAR DATA — BS month day-counts
-//  Verified anchor: BS 2082/11/11 (Falgun 11) = AD 23 Feb 2026
-//  Source: hamropatro.com / nepalicalendar.rat32.com
+// NEPALI CALENDAR DATA
+// Verified: BS 2082/11/11 (Falgun 11) = AD 23 Feb 2026
+// REF: BS 2000/01/01 = AD 1943/04/19
 // ═══════════════════════════════════════════════════════════
 const CAL = {
-  2000:[30,32,31,32,31,30,30,30,29,30,29,31],
-  2001:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2002:[31,31,32,32,31,30,30,29,30,29,30,30],
-  2003:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2004:[30,32,31,32,31,30,30,30,29,30,29,31],
-  2005:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2006:[31,31,32,32,31,30,30,29,30,29,30,30],
-  2007:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2008:[31,31,31,32,31,31,29,30,30,29,29,31],
-  2009:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2010:[31,31,32,32,31,30,30,29,30,29,30,30],
-  2011:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2012:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2013:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2014:[31,31,32,32,31,30,30,29,30,29,30,30],
-  2015:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2016:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2017:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2018:[31,31,32,32,31,30,30,29,30,29,30,30],
-  2019:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2020:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2021:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2022:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2023:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2024:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2025:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2026:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2027:[31,32,31,32,31,30,30,30,29,29,30,32],
-  2028:[30,31,32,32,31,30,30,30,29,29,30,31],
-  2029:[31,31,32,31,31,30,30,30,29,30,29,31],
-  2030:[31,31,32,31,31,30,30,30,29,30,29,31],
-  2031:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2032:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2033:[31,31,31,32,31,31,30,29,30,29,30,30],
-  2034:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2035:[31,31,32,32,31,30,30,29,30,29,30,31],
-  2036:[30,31,32,32,31,30,30,29,30,29,30,30],
-  2037:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2038:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2039:[31,32,31,32,31,30,30,29,30,29,30,31],
-  2040:[31,31,32,32,31,30,30,29,30,29,30,30],
-  2041:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2042:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2043:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2044:[31,31,32,32,31,30,30,30,29,29,30,31],
-  2045:[31,31,31,32,31,31,30,29,30,29,30,30],
-  2046:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2047:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2048:[30,32,31,32,31,30,30,30,29,29,30,31],
-  2049:[31,31,32,31,31,31,29,30,30,29,30,30],
-  2050:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2051:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2052:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2053:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2054:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2055:[31,32,31,32,31,30,30,29,30,29,30,30],
-  2056:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2057:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2058:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2059:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2060:[30,31,32,32,30,31,30,29,30,29,30,30],
-  2061:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2062:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2063:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2064:[30,31,32,32,31,30,29,30,30,29,30,30],
-  2065:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2066:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2067:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2068:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2069:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2070:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2071:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2072:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2073:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2074:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2075:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2076:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2077:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2078:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2079:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2080:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2081:[31,31,32,31,31,31,30,29,30,29,30,30],
-  // 2082 VERIFIED: anchor BS 2082/11/11 = AD Feb 23 2026
-  // Working back: Falgun(11)=30, Magh(10)=29, Poush(9)=29
-  2082:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2083:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2084:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2085:[31,31,32,31,31,31,30,29,30,29,30,30],
-  2086:[31,31,32,31,31,31,30,30,29,29,30,30],
-  2087:[31,32,31,32,31,30,30,30,29,29,30,31],
-  2088:[31,31,31,32,31,31,29,30,30,29,30,30],
-  2089:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2000:[30,32,31,32,31,30,30,30,29,30,29,31],2001:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2002:[31,31,32,32,31,30,30,29,30,29,30,30],2003:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2004:[30,32,31,32,31,30,30,30,29,30,29,31],2005:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2006:[31,31,32,32,31,30,30,29,30,29,30,30],2007:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2008:[31,31,31,32,31,31,29,30,30,29,29,31],2009:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2010:[31,31,32,32,31,30,30,29,30,29,30,30],2011:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2012:[31,31,31,32,31,31,29,30,30,29,30,30],2013:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2014:[31,31,32,32,31,30,30,29,30,29,30,30],2015:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2016:[31,31,31,32,31,31,29,30,30,29,30,30],2017:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2018:[31,31,32,32,31,30,30,29,30,29,30,30],2019:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2020:[31,31,31,32,31,31,29,30,30,29,30,30],2021:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2022:[31,32,31,32,31,30,30,29,30,29,30,30],2023:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2024:[31,31,31,32,31,31,29,30,30,29,30,30],2025:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2026:[31,32,31,32,31,30,30,29,30,29,30,30],2027:[31,32,31,32,31,30,30,30,29,29,30,32],
+  2028:[30,31,32,32,31,30,30,30,29,29,30,31],2029:[31,31,32,31,31,30,30,30,29,30,29,31],
+  2030:[31,31,32,31,31,30,30,30,29,30,29,31],2031:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2032:[31,32,31,32,31,30,30,29,30,29,30,30],2033:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2034:[31,31,32,31,31,31,30,29,30,29,30,30],2035:[31,31,32,32,31,30,30,29,30,29,30,31],
+  2036:[30,31,32,32,31,30,30,29,30,29,30,30],2037:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2038:[31,31,32,31,31,31,30,29,30,29,30,30],2039:[31,32,31,32,31,30,30,29,30,29,30,31],
+  2040:[31,31,32,32,31,30,30,29,30,29,30,30],2041:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2042:[31,31,32,31,31,31,30,29,30,29,30,30],2043:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2044:[31,31,32,32,31,30,30,30,29,29,30,31],2045:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2046:[31,31,32,31,31,31,30,29,30,29,30,30],2047:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2048:[30,32,31,32,31,30,30,30,29,29,30,31],2049:[31,31,32,31,31,31,29,30,30,29,30,30],
+  2050:[31,31,32,31,31,31,30,29,30,29,30,30],2051:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2052:[31,32,31,32,31,30,30,30,29,29,30,31],2053:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2054:[31,31,32,31,31,31,30,29,30,29,30,30],2055:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2056:[31,32,31,32,31,30,30,30,29,29,30,31],2057:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2058:[31,31,32,31,31,31,30,30,29,29,30,30],2059:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2060:[30,31,32,32,30,31,30,29,30,29,30,30],2061:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2062:[31,31,32,31,31,31,30,30,29,29,30,30],2063:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2064:[30,31,32,32,31,30,29,30,30,29,30,30],2065:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2066:[31,31,32,31,31,31,30,30,29,29,30,30],2067:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2068:[31,31,31,32,31,31,29,30,30,29,30,30],2069:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2070:[31,31,32,31,31,31,30,30,29,29,30,30],2071:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2072:[31,31,31,32,31,31,29,30,30,29,30,30],2073:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2074:[31,31,32,31,31,31,30,30,29,29,30,30],2075:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2076:[31,31,31,32,31,31,29,30,30,29,30,30],2077:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2078:[31,31,32,31,31,31,30,30,29,29,30,30],2079:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2080:[31,31,31,32,31,31,29,30,30,29,30,30],2081:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2082:[31,31,32,31,31,31,30,30,29,29,30,30],2083:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2084:[31,31,31,32,31,31,29,30,30,29,30,30],2085:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2086:[31,31,32,31,31,31,30,30,29,29,30,30],2087:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2088:[31,31,31,32,31,31,29,30,30,29,30,30],2089:[31,31,32,31,31,31,30,29,30,29,30,30],
   2090:[31,31,32,31,31,31,30,30,29,29,30,30],
 };
 
-const MONTH_NAMES = ['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
-const AD_MONTHS   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DOW         = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MN = ['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+const AM = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOW = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const REF = new Date(1943, 3, 19); // BS 2000/01/01 = AD 1943/04/19 (verified)
 
-// Reference: BS 2000/01/01 = AD 1943/04/19
-// Verified: BS 2082/11/11 (Falgun 11) = AD Feb 23, 2026 ✓
-const REF = new Date(1943, 3, 19);
+function mdays(y,m){ return CAL[y]?CAL[y][m-1]:30; }
 
-function mdays(y, m) { return CAL[y] ? CAL[y][m-1] : 30; }
-
-function bsToDays(y, m, d) {
-  let n = 0;
-  for (let yr = 2000; yr < y; yr++) {
-    const c = CAL[yr]; if (c) n += c.reduce((a,b)=>a+b,0); else n += 365;
-  }
-  for (let mo = 1; mo < m; mo++) n += mdays(y, mo);
-  return n + (d - 1);
+function bsToDays(y,m,d){
+  let n=0;
+  for(let yr=2000;yr<y;yr++){ const c=CAL[yr]; n+=c?c.reduce((a,b)=>a+b,0):365; }
+  for(let mo=1;mo<m;mo++) n+=mdays(y,mo);
+  return n+(d-1);
 }
-
-function bs2ad(y, m, d) {
-  const dt = new Date(REF);
-  dt.setDate(dt.getDate() + bsToDays(y, m, d));
-  return dt;
+function bs2ad(y,m,d){
+  const dt=new Date(REF); dt.setDate(dt.getDate()+bsToDays(y,m,d)); return dt;
 }
-
-function ad2bs(dt) {
-  let rem = Math.floor((dt - REF) / 86400000);
-  let y = 2000;
-  while (true) {
-    const c = CAL[y]; if (!c) break;
-    const yd = c.reduce((a,b)=>a+b,0);
-    if (rem < yd) break;
-    rem -= yd; y++;
-  }
-  let m = 1, d = 1;
-  for (let mo = 1; mo <= 12; mo++) {
-    const md = mdays(y, mo);
-    if (rem < md) { m = mo; d = rem + 1; break; }
-    rem -= md;
-  }
-  return { y, m, d };
+function ad2bs(dt){
+  let rem=Math.floor((dt-REF)/86400000), y=2000;
+  while(true){ const c=CAL[y]; if(!c)break; const yd=c.reduce((a,b)=>a+b,0); if(rem<yd)break; rem-=yd; y++; }
+  let m=1,d=1;
+  for(let mo=1;mo<=12;mo++){ const md=mdays(y,mo); if(rem<md){m=mo;d=rem+1;break;} rem-=md; }
+  return {y,m,d};
 }
+function fbs(y,m,d){ return `${y}/${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`; }
+function fad(dt){ return `${dt.getDate()} ${AM[dt.getMonth()]} ${dt.getFullYear()}`; }
 
-function fbs(y, m, d) { return `${y}/${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`; }
-function fad(dt) { return `${dt.getDate()} ${AD_MONTHS[dt.getMonth()]} ${dt.getFullYear()}`; }
+// ─── Live date header ────────────────────────────────────
+function updateLiveDate(){
+  const bs=ad2bs(new Date());
+  document.getElementById('live-date-txt').textContent=
+    `Today: ${fbs(bs.y,bs.m,bs.d)} BS · ${MN[bs.m-1]}`;
+}
+updateLiveDate();
+setInterval(updateLiveDate, 60000);
+
+// ─── Ripple effect ───────────────────────────────────────
+document.querySelectorAll('.btn').forEach(btn=>{
+  btn.addEventListener('click', e=>{
+    const r=btn.getBoundingClientRect();
+    const el=document.createElement('span');
+    el.className='ripple-el';
+    const size=Math.max(r.width,r.height);
+    el.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-r.left-size/2}px;top:${e.clientY-r.top-size/2}px`;
+    btn.appendChild(el);
+    el.addEventListener('animationend',()=>el.remove());
+  });
+});
 
 // ─── Selects ─────────────────────────────────────────────
-function mkYears(id, lo, hi, def) {
-  const el = document.getElementById(id); el.innerHTML = '';
-  for (let y = lo; y <= hi; y++) {
-    const o = document.createElement('option'); o.value = y; o.textContent = y;
-    if (y === def) o.selected = true; el.appendChild(o);
+function mkYears(id,lo,hi,def){
+  const el=document.getElementById(id); el.innerHTML='';
+  for(let y=lo;y<=hi;y++){
+    const o=document.createElement('option'); o.value=y; o.textContent=y;
+    if(y===def) o.selected=true; el.appendChild(o);
   }
 }
-function mkMonths(id, def) {
-  const el = document.getElementById(id); el.innerHTML = '';
-  MONTH_NAMES.forEach((n, i) => {
-    const o = document.createElement('option'); o.value = i+1;
-    o.textContent = `${i+1} · ${n}`;
-    if (i+1 === def) o.selected = true; el.appendChild(o);
+function mkMonths(id,def){
+  const el=document.getElementById(id); el.innerHTML='';
+  MN.forEach((n,i)=>{
+    const o=document.createElement('option'); o.value=i+1;
+    o.textContent=`${i+1} · ${n}`;
+    if(i+1===def) o.selected=true; el.appendChild(o);
   });
 }
-function hint(prefix) {
-  const y = +document.getElementById(`${prefix}-year`).value;
-  const m = +document.getElementById(`${prefix}-month`).value;
-  document.getElementById(`${prefix}-hint`).textContent =
-    `${MONTH_NAMES[m-1]} ${y} BS has ${mdays(y,m)} days`;
+function hint(pre){
+  const y=+document.getElementById(`${pre}-year`).value;
+  const m=+document.getElementById(`${pre}-month`).value;
+  document.getElementById(`${pre}-hint`).textContent=`${MN[m-1]} ${y} has ${mdays(y,m)} days`;
 }
-function onLmpChange() { hint('lmp'); }
-function onTodChange() { hint('tod'); }
-function onC1Change()  {
-  const y = +document.getElementById('c1-year').value;
-  const m = +document.getElementById('c1-month').value;
-  document.getElementById('c1-hint').textContent = `${MONTH_NAMES[m-1]} ${y} has ${mdays(y,m)} days`;
+function onLmpChange(){ hint('lmp'); }
+function onTodChange(){ hint('tod'); }
+function onC1Change(){
+  const y=+document.getElementById('c1-year').value;
+  const m=+document.getElementById('c1-month').value;
+  document.getElementById('c1-hint').textContent=`${MN[m-1]} ${y} has ${mdays(y,m)} days`;
 }
-function fillToday() {
-  const bs = ad2bs(new Date());
-  const yr = document.getElementById('tod-year');
-  for (const o of yr.options) if (+o.value === bs.y) { o.selected = true; break; }
-  const mo = document.getElementById('tod-month');
-  for (const o of mo.options) if (+o.value === bs.m) { o.selected = true; break; }
-  document.getElementById('tod-day').value = bs.d;
+function fillToday(){
+  const bs=ad2bs(new Date());
+  const yr=document.getElementById('tod-year');
+  for(const o of yr.options) if(+o.value===bs.y){o.selected=true;break;}
+  const mo=document.getElementById('tod-month');
+  for(const o of mo.options) if(+o.value===bs.m){o.selected=true;break;}
+  document.getElementById('tod-day').value=bs.d;
   hint('tod');
 }
-function switchTab(t) {
-  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.tab')[t==='wog'?0:1].classList.add('active');
   document.getElementById('tab-'+t).classList.add('active');
 }
 
-// ─── WOG ─────────────────────────────────────────────────
-function calcWOG() {
-  const ly = +document.getElementById('lmp-year').value;
-  const lm = +document.getElementById('lmp-month').value;
-  const ld = +document.getElementById('lmp-day').value;
-  const ty = +document.getElementById('tod-year').value;
-  const tm = +document.getElementById('tod-month').value;
-  const td = +document.getElementById('tod-day').value;
+// ─── Confetti burst ──────────────────────────────────────
+function burst(){
+  const wrap=document.getElementById('confetti');
+  wrap.innerHTML='';
+  const colors=['#FFD700','#FF6B6B','#6BCB77','#4D96FF','#FF922B','#fff'];
+  for(let i=0;i<20;i++){
+    const dot=document.createElement('div');
+    dot.className='confetti-dot';
+    const size=Math.random()*8+4;
+    const tx=(Math.random()-0.5)*200;
+    const ty=(Math.random()-0.5)*200;
+    dot.style.cssText=`
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:50%;top:40%;
+      --tx:${tx}px;--ty:${ty}px;
+      animation-delay:${Math.random()*0.2}s;
+      animation-duration:${0.6+Math.random()*0.4}s;
+    `;
+    wrap.appendChild(dot);
+  }
+}
 
-  const err = document.getElementById('err');
-  const res = document.getElementById('result');
+// ─── Animated counter ────────────────────────────────────
+function animateCount(el, target, suffix=''){
+  let start=0, dur=600, startTime=null;
+  function step(ts){
+    if(!startTime) startTime=ts;
+    const p=Math.min((ts-startTime)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(ease*target)+suffix;
+    if(p<1) requestAnimationFrame(step);
+    else el.textContent=target+suffix;
+  }
+  requestAnimationFrame(step);
+}
 
-  if (!ld || ld < 1 || ld > mdays(ly,lm)) {
-    err.textContent = `⚠ LMP day invalid — ${MONTH_NAMES[lm-1]} ${ly} has ${mdays(ly,lm)} days.`;
+// ─── WOG Calculation ────────────────────────────────────
+function calcWOG(){
+  const ly=+document.getElementById('lmp-year').value;
+  const lm=+document.getElementById('lmp-month').value;
+  const ld=+document.getElementById('lmp-day').value;
+  const ty=+document.getElementById('tod-year').value;
+  const tm=+document.getElementById('tod-month').value;
+  const td=+document.getElementById('tod-day').value;
+
+  const err=document.getElementById('err');
+  const res=document.getElementById('result');
+
+  if(!ld||ld<1||ld>mdays(ly,lm)){
+    err.textContent=`⚠ LMP day invalid — ${MN[lm-1]} ${ly} has ${mdays(ly,lm)} days.`;
     err.classList.add('show'); res.classList.remove('show'); return;
   }
-  if (!td || td < 1 || td > mdays(ty,tm)) {
-    err.textContent = `⚠ Visit day invalid — ${MONTH_NAMES[tm-1]} ${ty} has ${mdays(ty,tm)} days.`;
+  if(!td||td<1||td>mdays(ty,tm)){
+    err.textContent=`⚠ Visit day invalid — ${MN[tm-1]} ${ty} has ${mdays(ty,tm)} days.`;
     err.classList.add('show'); res.classList.remove('show'); return;
   }
 
-  const lmpAD = bs2ad(ly, lm, ld);
-  const visAD = bs2ad(ty, tm, td);
-  const days  = Math.floor((visAD - lmpAD) / 86400000);
+  const lmpAD=bs2ad(ly,lm,ld);
+  const visAD=bs2ad(ty,tm,td);
+  const days=Math.floor((visAD-lmpAD)/86400000);
 
-  if (days < 0) {
-    err.textContent = '⚠ LMP must be before the visit date.';
+  if(days<0){
+    err.textContent='⚠ LMP must be before the visit date.';
     err.classList.add('show'); res.classList.remove('show'); return;
   }
   err.classList.remove('show');
 
-  const wks = Math.floor(days / 7);
-  const dys = days % 7;
-  const eddAD = new Date(lmpAD.getTime() + 280 * 86400000);
-  const eddBS = ad2bs(eddAD);
+  const wks=Math.floor(days/7), dys=days%7;
+  const eddAD=new Date(lmpAD.getTime()+280*86400000);
+  const eddBS=ad2bs(eddAD);
+  const pct=Math.min(Math.round((days/280)*100),100);
 
-  const tri = wks < 13 ? '🌱 1st Trimester' : wks < 28 ? '🌿 2nd Trimester' : '🌸 3rd Trimester';
+  const tri = wks<13 ? '🌱 1st Trimester' : wks<28 ? '🌿 2nd Trimester' : '🌸 3rd Trimester';
 
-  document.getElementById('r-wog').innerHTML      = `${wks}<sup>+${dys}</sup>`;
-  document.getElementById('r-wog-label').textContent = `${wks} week${wks!==1?'s':''} and ${dys} day${dys!==1?'s':''}`;
-  document.getElementById('r-trimester').textContent = tri;
-  document.getElementById('r-lmp-bs').textContent  = fbs(ly,lm,ld);
-  document.getElementById('r-lmp-ad').textContent  = fad(lmpAD);
-  document.getElementById('r-vis-bs').textContent  = fbs(ty,tm,td);
-  document.getElementById('r-vis-ad').textContent  = fad(visAD);
-  document.getElementById('r-edd-bs').textContent  = fbs(eddBS.y,eddBS.m,eddBS.d);
-  document.getElementById('r-edd-ad').textContent  = fad(eddAD);
-  document.getElementById('r-total').textContent   = days + ' days';
-
+  // Show result
   res.classList.remove('show');
   void res.offsetWidth;
   res.classList.add('show');
-  res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Animate WOG number
+  const wogEl=document.getElementById('r-wog');
+  wogEl.innerHTML='';
+  setTimeout(()=>{
+    wogEl.classList.add('count-anim');
+    // count up weeks
+    let w=0;
+    const tick=setInterval(()=>{
+      w++;
+      wogEl.innerHTML=`${w}<sup>+${dys}</sup>`;
+      if(w>=wks){ clearInterval(tick); }
+    }, Math.max(30, 500/Math.max(wks,1)));
+    setTimeout(()=>{ wogEl.classList.remove('count-anim'); }, 600);
+  }, 200);
+
+  // Animate background number
+  document.getElementById('r-bg-num').textContent = wks;
+
+  document.getElementById('r-wog-label').textContent=`${wks} week${wks!==1?'s':''} and ${dys} day${dys!==1?'s':''}`;
+  document.getElementById('r-trimester').textContent=tri;
+
+  // Progress bar
+  setTimeout(()=>{
+    document.getElementById('r-prog').style.transform=`scaleX(${pct/100})`;
+    document.getElementById('r-pct').textContent=`${pct}% of pregnancy`;
+  }, 100);
+
+  // Details
+  document.getElementById('r-lmp-bs').textContent=fbs(ly,lm,ld);
+  document.getElementById('r-lmp-ad').textContent=fad(lmpAD);
+  document.getElementById('r-vis-bs').textContent=fbs(ty,tm,td);
+  document.getElementById('r-vis-ad').textContent=fad(visAD);
+  document.getElementById('r-edd-bs').textContent=fbs(eddBS.y,eddBS.m,eddBS.d);
+  document.getElementById('r-edd-ad').textContent=fad(eddAD);
+  document.getElementById('r-total').textContent=days+' days';
+
+  // Confetti!
+  setTimeout(burst, 300);
+
+  setTimeout(()=>res.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
 }
 
-// ─── Converters ───────────────────────────────────────────
-function doBS2AD() {
-  const y = +document.getElementById('c1-year').value;
-  const m = +document.getElementById('c1-month').value;
-  const d = +document.getElementById('c1-day').value;
-  if (!d || d < 1 || d > mdays(y,m)) { alert(`Invalid day — ${MONTH_NAMES[m-1]} ${y} has ${mdays(y,m)} days.`); return; }
-  const ad = bs2ad(y, m, d);
-  document.getElementById('c1-ad').textContent  = fad(ad);
-  document.getElementById('c1-dow').textContent = DOW[ad.getDay()];
-  const r = document.getElementById('c1-res');
+// ─── Converters ──────────────────────────────────────────
+function doBS2AD(){
+  const y=+document.getElementById('c1-year').value;
+  const m=+document.getElementById('c1-month').value;
+  const d=+document.getElementById('c1-day').value;
+  if(!d||d<1||d>mdays(y,m)){alert(`Invalid day — ${MN[m-1]} ${y} has ${mdays(y,m)} days.`);return;}
+  const ad=bs2ad(y,m,d);
+  document.getElementById('c1-ad').textContent=fad(ad);
+  document.getElementById('c1-dow').textContent=DOW[ad.getDay()];
+  const r=document.getElementById('c1-res');
   r.classList.remove('show'); void r.offsetWidth; r.classList.add('show');
 }
-function doAD2BS() {
-  const y = +document.getElementById('c2-year').value;
-  const m = +document.getElementById('c2-month').value;
-  const d = +document.getElementById('c2-day').value;
-  if (!y||!m||!d||m<1||m>12||d<1||d>31) { alert('Enter a valid AD date.'); return; }
-  const ad = new Date(y, m-1, d);
-  if (ad.getMonth() !== m-1) { alert('Invalid date.'); return; }
-  const bs = ad2bs(ad);
-  document.getElementById('c2-bs').textContent  = `${fbs(bs.y,bs.m,bs.d)} · ${MONTH_NAMES[bs.m-1]}`;
-  document.getElementById('c2-dow').textContent = DOW[ad.getDay()];
-  const r = document.getElementById('c2-res');
+function doAD2BS(){
+  const y=+document.getElementById('c2-year').value;
+  const m=+document.getElementById('c2-month').value;
+  const d=+document.getElementById('c2-day').value;
+  if(!y||!m||!d||m<1||m>12||d<1||d>31){alert('Enter a valid AD date.');return;}
+  const ad=new Date(y,m-1,d);
+  if(ad.getMonth()!==m-1){alert('Invalid date.');return;}
+  const bs=ad2bs(ad);
+  document.getElementById('c2-bs').textContent=`${fbs(bs.y,bs.m,bs.d)} · ${MN[bs.m-1]}`;
+  document.getElementById('c2-dow').textContent=DOW[ad.getDay()];
+  const r=document.getElementById('c2-res');
   r.classList.remove('show'); void r.offsetWidth; r.classList.add('show');
 }
 
-// ─── Init ─────────────────────────────────────────────────
-(function() {
-  mkYears('lmp-year', 2075, 2085, 2082); mkMonths('lmp-month', 9);
-  document.getElementById('lmp-day').value = 11; hint('lmp');
+// ─── Init ────────────────────────────────────────────────
+(function(){
+  mkYears('lmp-year',2075,2085,2082); mkMonths('lmp-month',9);
+  document.getElementById('lmp-day').value=11; hint('lmp');
 
-  mkYears('tod-year', 2075, 2085, 2082); mkMonths('tod-month', 11);
-  document.getElementById('tod-day').value = 11; hint('tod');
+  mkYears('tod-year',2075,2085,2082); mkMonths('tod-month',11);
+  document.getElementById('tod-day').value=11; hint('tod');
 
-  mkYears('c1-year', 2060, 2090, 2082); mkMonths('c1-month', 1); onC1Change();
+  mkYears('c1-year',2060,2090,2082); mkMonths('c1-month',1); onC1Change();
+
+  // add ripple to dynamically created buttons too
+  document.querySelectorAll('.btn').forEach(btn=>{
+    if(btn._ripple) return; btn._ripple=true;
+    btn.addEventListener('click',e=>{
+      const r=btn.getBoundingClientRect();
+      const el=document.createElement('span');
+      el.className='ripple-el';
+      const size=Math.max(r.width,r.height);
+      el.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-r.left-size/2}px;top:${e.clientY-r.top-size/2}px`;
+      btn.appendChild(el);
+      el.addEventListener('animationend',()=>el.remove());
+    });
+  });
 })();
 </script>
 </body>
